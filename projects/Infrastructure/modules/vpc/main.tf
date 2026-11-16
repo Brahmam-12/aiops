@@ -30,6 +30,10 @@ resource "aws_subnet" "subnets" {
     "kubernetes.io/role/elb"                    = "1"
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
   }
+
+  # Destroy order: EKS nodes -> subnets -> IGW. Without this the IGW detach starts
+  # immediately and fails ("mapped public address(es)") while nodes still hold public IPs.
+  depends_on = [aws_internet_gateway.igw]
 }
 
 

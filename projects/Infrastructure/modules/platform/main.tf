@@ -8,16 +8,26 @@ terraform {
 }
 
 # =============================================================== namespaces
+# On destroy, namespaces can take >5 min to empty (EBS detach, ALB/TargetGroup finalizers,
+# Argo CD app finalizer). depends_on keeps metrics-server (aggregated API - namespace
+# deletion stalls without it) and the LB controller (removes Ingress finalizers) running
+# until every namespace is gone.
 resource "kubernetes_namespace_v1" "argocd" {
   metadata { name = "argocd" }
+  timeouts { delete = "20m" }
+  depends_on = [helm_release.metrics_server, helm_release.load_balancer_controller]
 }
 
 resource "kubernetes_namespace_v1" "monitoring" {
   metadata { name = "monitoring" }
+  timeouts { delete = "20m" }
+  depends_on = [helm_release.metrics_server, helm_release.load_balancer_controller]
 }
 
 resource "kubernetes_namespace_v1" "cloudwatch" {
   metadata { name = "amazon-cloudwatch" }
+  timeouts { delete = "20m" }
+  depends_on = [helm_release.metrics_server, helm_release.load_balancer_controller]
 }
 
 # The app namespace is owned by Terraform (not Argo CD) because the secret below lives in it.
@@ -30,6 +40,8 @@ resource "kubernetes_namespace_v1" "app" {
       "pod-security.kubernetes.io/warn"    = "restricted"
     }
   }
+  timeouts { delete = "20m" }
+  depends_on = [helm_release.metrics_server, helm_release.load_balancer_controller]
 }
 
 # =============================================================== app secrets
