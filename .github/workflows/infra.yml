@@ -10,7 +10,6 @@
 #   variable AWS_REGION        optional, default us-east-1
 #   variable TF_STATE_BUCKET   optional, default telugu-pickles-tfstate-<account id>
 name: Infrastructure
-
 on:
   push:
     branches: [main]
