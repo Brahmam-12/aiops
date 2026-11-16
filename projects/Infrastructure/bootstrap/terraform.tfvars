@@ -1,5 +1,5 @@
 # EDIT for your fork: owner/repository on GitHub
-github_repository = "https://github.com/Brahmam-12/aiops"
+github_repository = "Brahmam-12/aiops"
 
 # Numeric IDs GitHub puts in its OIDC token (repo:OWNER@OWNER_ID/REPO@REPO_ID:...).
 # Get them with:
